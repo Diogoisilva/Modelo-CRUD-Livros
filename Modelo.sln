@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modelo", "Modelo\Modelo.csproj", "{B573D7FC-2EB9-415D-8470-9F4E7B709E2E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modelo.Domain", "Domain\Modelo.Domain.csproj", "{B76E28B0-DD49-4D2F-8B05-516064DC7C9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modelo.Cross", "Modelo.Cross\Modelo.Cross.csproj", "{F168C674-54DA-4682-914B-A33DFDD0F83F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{B76E28B0-DD49-4D2F-8B05-516064DC7C9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B76E28B0-DD49-4D2F-8B05-516064DC7C9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B76E28B0-DD49-4D2F-8B05-516064DC7C9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F168C674-54DA-4682-914B-A33DFDD0F83F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F168C674-54DA-4682-914B-A33DFDD0F83F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F168C674-54DA-4682-914B-A33DFDD0F83F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F168C674-54DA-4682-914B-A33DFDD0F83F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
