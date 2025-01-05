@@ -453,9 +453,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\diogo\\source\\repos\\Modelo-CRUD-Livros\\Modelo\\Modelo.Api.csproj",
-      "projectName": "Modelo.Api",
-      "projectPath": "C:\\Users\\diogo\\source\\repos\\Modelo-CRUD-Livros\\Modelo\\Modelo.Api.csproj",
+      "projectUniqueName": "C:\\Users\\diogo\\source\\repos\\Modelo-CRUD-Livros\\Modelo\\Modelo.csproj",
+      "projectName": "Modelo",
+      "projectPath": "C:\\Users\\diogo\\source\\repos\\Modelo-CRUD-Livros\\Modelo\\Modelo.csproj",
       "packagesPath": "C:\\Users\\diogo\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\diogo\\source\\repos\\Modelo-CRUD-Livros\\Modelo\\obj\\",
       "projectStyle": "PackageReference",
