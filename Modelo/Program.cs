@@ -1,20 +1,39 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Modelo.Domain.Interfaces;
+using Modelo.Infrastructure.Data;
+using Modelo.Infrastructure.Repositories;
+using Modelo.Services;
 
-namespace Modelo.Api
+var builder = WebApplication.CreateBuilder(args);
+
+// Adicione serviços ao contêiner
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Obtenha a string de conexão do appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Registre o DbConnectionHelper com a string de conexão
+builder.Services.AddSingleton(new DbConnectionHelper(connectionString));
+
+// Registre os serviços e repositórios
+builder.Services.AddScoped<ILivroService, LivroService>();
+builder.Services.AddScoped<ILivroRepository, LivroRepository>();
+
+var app = builder.Build();
+
+// Configure o Swagger
+if (app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+// Configure o pipeline de requisições
+app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+
+app.Run();

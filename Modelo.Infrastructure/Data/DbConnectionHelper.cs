@@ -1,21 +1,19 @@
-﻿using System.Data;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+﻿using System.Data.SqlClient;
 
 namespace Modelo.Infrastructure.Data
 {
     public class DbConnectionHelper
     {
-        private readonly IConfiguration _configuration;
+        private readonly string _connectionString;
 
-        public DbConnectionHelper(IConfiguration configuration)
+        public DbConnectionHelper(string connectionString)
         {
-            _configuration = configuration;
+            _connectionString = connectionString;
         }
 
-        public IDbConnection CreateConnection()
+        public SqlConnection GetConnection()
         {
-            return new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+            return new SqlConnection(_connectionString);
         }
     }
 }

@@ -1,7 +1,8 @@
-﻿namespace Modelo.Api.Models
+﻿namespace Modelo.Domain.Models
 {
-    public class LivroRequestModel
+    public class LivroResponseModel
     {
+        public int Codl { get; set; }
         public string Titulo { get; set; }
         public string Editora { get; set; }
         public string Edicao { get; set; }

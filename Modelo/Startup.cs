@@ -1,51 +1,42 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Modelo.Domain.Interfaces;
+﻿using Modelo.Domain.Interfaces;
+using Modelo.Infrastructure.Data;
 using Modelo.Infrastructure.Repositories;
 using Modelo.Services;
 
-namespace Modelo.Api
+public class Startup
 {
-    public class Startup
+    public IConfiguration Configuration { get; }
+
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
+        Configuration = configuration;
+    }
+
+    // Registra os serviços no contêiner
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers(); // Adiciona suporte a controladores para Web API
+
+        // Registra os serviços personalizados
+        services.AddScoped<DbConnectionHelper>(provider =>
+            new DbConnectionHelper(Configuration.GetConnectionString("DefaultConnection")));
+        services.AddScoped<ILivroRepository, LivroRepository>();
+        services.AddScoped<ILivroService, LivroService>();
+    }
+
+    // Configura o pipeline HTTP
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
         {
-            Configuration = configuration;
+            app.UseDeveloperExceptionPage();
         }
 
-        public IConfiguration Configuration { get; }
+        app.UseRouting();
 
-        public void ConfigureServices(IServiceCollection services)
+        app.UseEndpoints(endpoints =>
         {
-            services.AddControllers();
-            services.AddScoped<ILivroService, LivroService>();
-            services.AddScoped<IAutorService, AutorService>();
-            services.AddScoped<IAssuntoService, AssuntoService>();
-            services.AddScoped<ILivroRepository, LivroRepository>();
-            services.AddScoped<IAutorRepository, AutorRepository>();
-            services.AddScoped<IAssuntoRepository, AssuntoRepository>();
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-        }
+            endpoints.MapControllers(); // Certifique-se de mapear os controladores
+        });
     }
 }

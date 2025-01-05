@@ -8,11 +8,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modelo.Cross", "Modelo.Cross\Modelo.Cross.csproj", "{F168C674-54DA-4682-914B-A33DFDD0F83F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modelo.Infrastructure", "Modelo.Infrastructure\Modelo.Infrastructure.csproj", "{CCECD8D4-4FB9-48E8-9762-5EB86953AEA0}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E3F02E98-D714-4D4D-958B-8A0C91724464} = {E3F02E98-D714-4D4D-958B-8A0C91724464}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modelo.Domain", "Modelo.Domain\Modelo.Domain.csproj", "{E3F02E98-D714-4D4D-958B-8A0C91724464}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modelo.Services", "Modelo.Services\Modelo.Services.csproj", "{8E21B4D9-3AED-48EA-984A-623C1897A469}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +35,10 @@ Global
 		{E3F02E98-D714-4D4D-958B-8A0C91724464}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3F02E98-D714-4D4D-958B-8A0C91724464}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3F02E98-D714-4D4D-958B-8A0C91724464}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E21B4D9-3AED-48EA-984A-623C1897A469}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E21B4D9-3AED-48EA-984A-623C1897A469}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E21B4D9-3AED-48EA-984A-623C1897A469}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E21B4D9-3AED-48EA-984A-623C1897A469}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

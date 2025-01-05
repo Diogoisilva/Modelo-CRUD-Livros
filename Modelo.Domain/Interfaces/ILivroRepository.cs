@@ -2,7 +2,7 @@
 
 namespace Modelo.Domain.Interfaces
 {
-    public interface ILivroService
+    public interface ILivroRepository
     {
         void InserirLivro(LivroRequestModel livro);
         void AtualizarLivro(int codl, LivroRequestModel livro);
