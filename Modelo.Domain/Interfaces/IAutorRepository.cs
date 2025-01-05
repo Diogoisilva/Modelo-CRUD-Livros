@@ -1,14 +1,14 @@
-﻿using Modelo.Domain.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Modelo.Domain.Models;
 
 namespace Modelo.Domain.Interfaces
 {
     public interface IAutorRepository
     {
-        void InserirAutor(Autor autor);
-        void AtualizarAutor(int codAu, Autor autor);
+        void InserirAutor(AutorRequestModel autor);
+        void AtualizarAutor(int codAu, AutorRequestModel autor);
         void DeletarAutor(int codAu);
-        Autor ObterAutorPorId(int codAu);
-        IEnumerable<Autor> ListarAutores();
+        AutorResponseModel ObterAutorPorId(int codAu);
+        IEnumerable<AutorResponseModel> ListarAutores();
     }
 }
