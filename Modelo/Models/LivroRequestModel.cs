@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Modelo.Domain.Models
+﻿namespace Modelo.Api.Models
 {
-    public class Livro
+    public class LivroRequestModel
     {
-        public int Codl { get; set; }
         public string Titulo { get; set; }
         public string Editora { get; set; }
         public string Edicao { get; set; }
