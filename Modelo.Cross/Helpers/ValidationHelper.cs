@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Modelo.Domain.Models
+namespace Modelo.Cross.Helpers
 {
-    public class Autor
+    internal class ValidationHelper
     {
-        public int CodAu { get; set; }
-        public string Nome { get; set; }
     }
 }
