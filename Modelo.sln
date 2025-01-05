@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modelo", "Modelo\Modelo.csproj", "{B573D7FC-2EB9-415D-8470-9F4E7B709E2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modelo.Api", "Modelo\Modelo.Api.csproj", "{B573D7FC-2EB9-415D-8470-9F4E7B709E2E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modelo.Domain", "Domain\Modelo.Domain.csproj", "{B76E28B0-DD49-4D2F-8B05-516064DC7C9C}"
 EndProject
