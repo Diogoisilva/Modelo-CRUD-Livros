@@ -11,9 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Modelo.Domain\Modelo.Domain.csproj" />
-    <ProjectReference Include="..\Modelo.Infrastructure\Modelo.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modelo.Services\Modelo.Services.csproj" />
+    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>
