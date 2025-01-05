@@ -18,9 +18,12 @@ builder.Services.AddSingleton(new DbConnectionHelper(connectionString));
 
 // Registre os serviços e repositórios
 builder.Services.AddScoped<ILivroService, LivroService>();
-builder.Services.AddScoped<IAutorService, AutorService>();
 builder.Services.AddScoped<ILivroRepository, LivroRepository>();
+builder.Services.AddScoped<IAutorService, AutorService>();
 builder.Services.AddScoped<IAutorRepository, AutorRepository>();
+builder.Services.AddScoped<IAssuntoService, AssuntoService>();
+builder.Services.AddScoped<IAssuntoRepository, AssuntoRepository>();
+
 
 var app = builder.Build();
 
