@@ -16,7 +16,7 @@ namespace Modelo.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult InserirAutor([FromBody] Autor autor)
+        public IActionResult InserirAutor([FromBody] AutorRequestModel autor)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace Modelo.Api.Controllers
         }
 
         [HttpPut("{codAu}")]
-        public IActionResult AtualizarAutor(int codAu, [FromBody] Autor autor)
+        public IActionResult AtualizarAutor(int codAu, [FromBody] AutorRequestModel autor)
         {
             try
             {

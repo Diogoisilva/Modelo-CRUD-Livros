@@ -14,13 +14,13 @@ namespace Modelo.Services
             _autorRepository = autorRepository;
         }
 
-        public void InserirAutor(Autor autor)
+        public void InserirAutor(AutorRequestModel autor)
         {
             ValidationHelper.ValidateString(autor.Nome, "Nome");
             _autorRepository.InserirAutor(autor);
         }
 
-        public void AtualizarAutor(int codAu, Autor autor)
+        public void AtualizarAutor(int codAu, AutorRequestModel autor)
         {
             var autorExistente = _autorRepository.ObterAutorPorId(codAu);
             if (autorExistente == null)
@@ -36,12 +36,12 @@ namespace Modelo.Services
             _autorRepository.DeletarAutor(codAu);
         }
 
-        public Autor ObterAutorPorId(int codAu)
+        public AutorResponseModel ObterAutorPorId(int codAu)
         {
             return _autorRepository.ObterAutorPorId(codAu);
         }
 
-        public IEnumerable<Autor> ListarAutores()
+        public IEnumerable<AutorResponseModel> ListarAutores()
         {
             return _autorRepository.ListarAutores();
         }

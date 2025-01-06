@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Modelo.Domain.Interfaces;
 using Modelo.Domain.Models;
 using Modelo.Infrastructure.Data;
@@ -10,94 +10,165 @@ namespace Modelo.Infrastructure.Repositories
 {
     public class AutorRepository : IAutorRepository
     {
-        private readonly string _connectionString;
+        private readonly DbConnectionHelper _dbConnectionHelper;
 
-        public AutorRepository(IConfiguration configuration)
+        public AutorRepository(DbConnectionHelper dbConnectionHelper)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _dbConnectionHelper = dbConnectionHelper;
         }
 
-        public void InserirAutor(Autor autor)
+        public void InserirAutor(AutorRequestModel autor)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                var command = new SqlCommand("INSERT INTO Autor (Nome) VALUES (@Nome)", connection);
-                command.Parameters.AddWithValue("@Nome", autor.Nome);
+                using (var connection = _dbConnectionHelper.GetConnection())
+                {
+                    var command = new SqlCommand("InserirAutor", connection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+                    command.Parameters.AddWithValue("@Nome", autor.Nome);
 
-                connection.Open();
-                command.ExecuteNonQuery();
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Ocorreu um erro no banco de dados ao inserir o autor. Por favor, tente novamente mais tarde.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ocorreu um erro inesperado ao inserir o autor. Por favor, tente novamente mais tarde.", ex);
             }
         }
 
-        public void AtualizarAutor(int codAu, Autor autor)
+        public void AtualizarAutor(int codAu, AutorRequestModel autor)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                var command = new SqlCommand("UPDATE Autor SET Nome = @Nome WHERE CodAu = @CodAu", connection);
-                command.Parameters.AddWithValue("@Nome", autor.Nome);
-                command.Parameters.AddWithValue("@CodAu", codAu);
+                using (var connection = _dbConnectionHelper.GetConnection())
+                {
+                    var command = new SqlCommand("AtualizarAutor", connection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+                    command.Parameters.AddWithValue("@CodAu", codAu);
+                    command.Parameters.AddWithValue("@Nome", autor.Nome);
 
-                connection.Open();
-                command.ExecuteNonQuery();
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Ocorreu um erro no banco de dados ao atualizar o autor. Por favor, tente novamente mais tarde.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ocorreu um erro inesperado ao atualizar o autor. Por favor, tente novamente mais tarde.", ex);
             }
         }
 
         public void DeletarAutor(int codAu)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                var command = new SqlCommand("DELETE FROM Autor WHERE CodAu = @CodAu", connection);
-                command.Parameters.AddWithValue("@CodAu", codAu);
+                using (var connection = _dbConnectionHelper.GetConnection())
+                {
+                    var command = new SqlCommand("DeletarAutor", connection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+                    command.Parameters.AddWithValue("@CodAu", codAu);
 
-                connection.Open();
-                command.ExecuteNonQuery();
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Ocorreu um erro no banco de dados ao deletar o autor. Por favor, tente novamente mais tarde.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ocorreu um erro inesperado ao deletar o autor. Por favor, tente novamente mais tarde.", ex);
             }
         }
 
-        public Autor ObterAutorPorId(int codAu)
+        public AutorResponseModel ObterAutorPorId(int codAu)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                var command = new SqlCommand("SELECT * FROM Autor WHERE CodAu = @CodAu", connection);
-                command.Parameters.AddWithValue("@CodAu", codAu);
-
-                connection.Open();
-                using (var reader = command.ExecuteReader())
+                using (var connection = _dbConnectionHelper.GetConnection())
                 {
-                    if (reader.Read())
+                    var command = new SqlCommand("ObterAutorPorId", connection)
                     {
-                        return new Autor
+                        CommandType = CommandType.StoredProcedure
+                    };
+                    command.Parameters.AddWithValue("@CodAu", codAu);
+
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
                         {
-                            CodAu = (int)reader["CodAu"],
-                            Nome = (string)reader["Nome"]
-                        };
+                            return new AutorResponseModel
+                            {
+                                CodAu = (int)reader["CodAu"],
+                                Nome = (string)reader["Nome"]
+                            };
+                        }
                     }
                 }
             }
+            catch (SqlException ex)
+            {
+                throw new Exception("Ocorreu um erro no banco de dados ao obter o autor. Por favor, tente novamente mais tarde.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ocorreu um erro inesperado ao obter o autor. Por favor, tente novamente mais tarde.", ex);
+            }
+
             return null;
         }
 
-        public IEnumerable<Autor> ListarAutores()
+        public IEnumerable<AutorResponseModel> ListarAutores()
         {
-            var autores = new List<Autor>();
-
-            using (var connection = new SqlConnection(_connectionString))
+            var autores = new List<AutorResponseModel>();
+            try
             {
-                var command = new SqlCommand("SELECT * FROM Autor", connection);
-
-                connection.Open();
-                using (var reader = command.ExecuteReader())
+                using (var connection = _dbConnectionHelper.GetConnection())
                 {
-                    while (reader.Read())
+                    var command = new SqlCommand("ListarAutores", connection)
                     {
-                        autores.Add(new Autor
+                        CommandType = CommandType.StoredProcedure
+                    };
+
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
                         {
-                            CodAu = (int)reader["CodAu"],
-                            Nome = (string)reader["Nome"]
-                        });
+                            autores.Add(new AutorResponseModel
+                            {
+                                CodAu = (int)reader["CodAu"],
+                                Nome = (string)reader["Nome"]
+                            });
+                        }
                     }
                 }
             }
+            catch (SqlException ex)
+            {
+                throw new Exception("Ocorreu um erro no banco de dados ao listar os autores. Por favor, tente novamente mais tarde.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ocorreu um erro inesperado ao listar os autores. Por favor, tente novamente mais tarde.", ex);
+            }
+
             return autores;
         }
     }

@@ -10,6 +10,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configurar CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
 // Obtenha a string de conexão do appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -24,7 +36,6 @@ builder.Services.AddScoped<IAutorRepository, AutorRepository>();
 builder.Services.AddScoped<IAssuntoService, AssuntoService>();
 builder.Services.AddScoped<IAssuntoRepository, AssuntoRepository>();
 
-
 var app = builder.Build();
 
 // Configure o Swagger
@@ -34,8 +45,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Configure o pipeline de requisições
+// Configurar o middleware HTTP.
+app.UseHttpsRedirection();
+
+// Aplica a política de CORS
+app.UseCors("AllowAllOrigins");
+
 app.UseRouting();
+app.UseAuthorization();
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
