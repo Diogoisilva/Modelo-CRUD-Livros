@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Modelo.Domain.Interfaces;
 using Modelo.Domain.Models;
 using Modelo.Infrastructure.Data;
@@ -17,7 +18,7 @@ namespace Modelo.Infrastructure.Repositories
             _dbConnectionHelper = dbConnectionHelper;
         }
 
-        public void InserirAutor(AutorRequestModel autor)
+        public async Task InserirAutorAsync(AutorRequestModel autor)
         {
             try
             {
@@ -30,7 +31,7 @@ namespace Modelo.Infrastructure.Repositories
                     command.Parameters.AddWithValue("@Nome", autor.Nome);
 
                     connection.Open();
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
             catch (SqlException ex)
@@ -43,7 +44,7 @@ namespace Modelo.Infrastructure.Repositories
             }
         }
 
-        public void AtualizarAutor(int codAu, AutorRequestModel autor)
+        public async Task AtualizarAutorAsync(int codAu, AutorRequestModel autor)
         {
             try
             {
@@ -57,7 +58,7 @@ namespace Modelo.Infrastructure.Repositories
                     command.Parameters.AddWithValue("@Nome", autor.Nome);
 
                     connection.Open();
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
             catch (SqlException ex)
@@ -70,7 +71,7 @@ namespace Modelo.Infrastructure.Repositories
             }
         }
 
-        public void DeletarAutor(int codAu)
+        public async Task DeletarAutorAsync(int codAu)
         {
             try
             {
@@ -83,7 +84,7 @@ namespace Modelo.Infrastructure.Repositories
                     command.Parameters.AddWithValue("@CodAu", codAu);
 
                     connection.Open();
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
             catch (SqlException ex)
@@ -96,7 +97,7 @@ namespace Modelo.Infrastructure.Repositories
             }
         }
 
-        public AutorResponseModel ObterAutorPorId(int codAu)
+        public async Task<AutorResponseModel> ObterAutorPorIdAsync(int codAu)
         {
             try
             {
@@ -109,9 +110,9 @@ namespace Modelo.Infrastructure.Repositories
                     command.Parameters.AddWithValue("@CodAu", codAu);
 
                     connection.Open();
-                    using (var reader = command.ExecuteReader())
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        if (reader.Read())
+                        if (await reader.ReadAsync())
                         {
                             return new AutorResponseModel
                             {
@@ -134,7 +135,7 @@ namespace Modelo.Infrastructure.Repositories
             return null;
         }
 
-        public IEnumerable<AutorResponseModel> ListarAutores()
+        public async Task<IEnumerable<AutorResponseModel>> ListarAutoresAsync()
         {
             var autores = new List<AutorResponseModel>();
             try
@@ -147,9 +148,9 @@ namespace Modelo.Infrastructure.Repositories
                     };
 
                     connection.Open();
-                    using (var reader = command.ExecuteReader())
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        while (await reader.ReadAsync())
                         {
                             autores.Add(new AutorResponseModel
                             {

@@ -1,7 +1,6 @@
 ﻿using Modelo.Domain.Interfaces;
 using Modelo.Domain.Models;
-using Modelo.Cross.Helpers;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Modelo.Services
 {
@@ -14,36 +13,29 @@ namespace Modelo.Services
             _autorRepository = autorRepository;
         }
 
-        public void InserirAutor(AutorRequestModel autor)
+        public async Task InserirAutorAsync(AutorRequestModel autor)
         {
-            ValidationHelper.ValidateString(autor.Nome, "Nome");
-            _autorRepository.InserirAutor(autor);
+            await _autorRepository.InserirAutorAsync(autor);
         }
 
-        public void AtualizarAutor(int codAu, AutorRequestModel autor)
+        public async Task AtualizarAutorAsync(int codAu, AutorRequestModel autor)
         {
-            var autorExistente = _autorRepository.ObterAutorPorId(codAu);
-            if (autorExistente == null)
-            {
-                throw new KeyNotFoundException("Autor não encontrado.");
-            }
-
-            _autorRepository.AtualizarAutor(codAu, autor);
+            await _autorRepository.AtualizarAutorAsync(codAu, autor);
         }
 
-        public void DeletarAutor(int codAu)
+        public async Task DeletarAutorAsync(int codAu)
         {
-            _autorRepository.DeletarAutor(codAu);
+            await _autorRepository.DeletarAutorAsync(codAu);
         }
 
-        public AutorResponseModel ObterAutorPorId(int codAu)
+        public async Task<AutorResponseModel> ObterAutorPorIdAsync(int codAu)
         {
-            return _autorRepository.ObterAutorPorId(codAu);
+            return await _autorRepository.ObterAutorPorIdAsync(codAu);
         }
 
-        public IEnumerable<AutorResponseModel> ListarAutores()
+        public async Task<IEnumerable<AutorResponseModel>> ListarAutoresAsync()
         {
-            return _autorRepository.ListarAutores();
+            return await _autorRepository.ListarAutoresAsync();
         }
     }
 }

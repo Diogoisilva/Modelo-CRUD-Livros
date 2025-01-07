@@ -3,6 +3,6 @@
     public class Autor
     {
         public int CodAu { get; set; }
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
     }
 }

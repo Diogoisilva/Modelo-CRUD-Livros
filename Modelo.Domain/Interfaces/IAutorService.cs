@@ -1,14 +1,15 @@
 ﻿using Modelo.Domain.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Modelo.Domain.Interfaces
 {
     public interface IAutorService
     {
-        void InserirAutor(AutorRequestModel autor);
-        void AtualizarAutor(int codAu, AutorRequestModel autor);
-        void DeletarAutor(int codAu);
-        AutorResponseModel ObterAutorPorId(int codAu);
-        IEnumerable<AutorResponseModel> ListarAutores();
+        Task InserirAutorAsync(AutorRequestModel autor);
+        Task AtualizarAutorAsync(int codAu, AutorRequestModel autor);
+        Task DeletarAutorAsync(int codAu);
+        Task<AutorResponseModel> ObterAutorPorIdAsync(int codAu);
+        Task<IEnumerable<AutorResponseModel>> ListarAutoresAsync();
     }
 }

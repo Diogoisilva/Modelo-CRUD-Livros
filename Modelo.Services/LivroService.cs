@@ -76,34 +76,57 @@ public class LivroService : ILivroService
 
         return livro;
     }
-
     public async Task<Livro> CreateLivroAsync(string connectionString, Livro livro)
     {
         using (var connection = new SqlConnection(connectionString))
         {
-            var command = new SqlCommand("spCreateLivro", connection)
+
+            try
             {
-                CommandType = CommandType.StoredProcedure,
-                CommandTimeout = 30 // Definindo o tempo limite para 30 segundos
-            };
-            command.Parameters.AddWithValue("@Titulo", livro.Titulo);
-            command.Parameters.AddWithValue("@Editora", livro.Editora);
-            command.Parameters.AddWithValue("@Edicao", livro.Edicao);
-            command.Parameters.AddWithValue("@AnoPublicacao", livro.AnoPublicacao);
-            command.Parameters.AddWithValue("@Preco", livro.Preco);
-            command.Parameters.AddWithValue("@FormaCompra", livro.FormaCompra);
-            command.Parameters.AddWithValue("@CodAu", livro.Autor?.CodAu ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@CodAssunto", livro.Assunto?.CodAssunto ?? (object)DBNull.Value);
+                var command = new SqlCommand("spCreateLivro", connection)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                    CommandTimeout = 30 // Definindo o tempo limite para 30 segundos
+                };
 
-            connection.Open();
-            livro.CodL = (int)await command.ExecuteScalarAsync();
+                command.Parameters.AddWithValue("@Titulo", livro.Titulo);
+                command.Parameters.AddWithValue("@Editora", livro.Editora);
+                command.Parameters.AddWithValue("@Edicao", livro.Edicao);
+                command.Parameters.AddWithValue("@AnoPublicacao", livro.AnoPublicacao);
+                command.Parameters.AddWithValue("@Preco", livro.Preco);
+                command.Parameters.AddWithValue("@FormaCompra", livro.FormaCompra);
+
+                connection.Open();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        livro.CodL = reader.GetInt32(0);
+                    }
+                }
+
+                if (livro.Autor?.CodAu != null)
+                {
+                    await AddLivroAutorAsync(connectionString, livro.CodL, livro.Autor.CodAu);
+                }
+
+                if (livro.Assunto?.CodAssunto != null)
+                {
+                    await AddLivroAssuntoAsync(connectionString, livro.CodL, livro.Assunto.CodAssunto);
+                }
+
+
+
+                return livro;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Erro ao criar livro: " + ex.Message);
+            }
         }
-
-        return livro;
     }
-
-
-
 
     public async Task UpdateLivroAsync(string connectionString, Livro livro)
     {
@@ -138,9 +161,10 @@ public class LivroService : ILivroService
 
     public async Task DeleteLivroAsync(string connectionString, int id)
     {
-        using (var connection = new SqlConnection(connectionString))
+        try
         {
-            var command = new SqlCommand("spDeleteLivro", connection)
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand("spDeleteLivro", connection)
             {
                 CommandType = CommandType.StoredProcedure
             };
@@ -150,8 +174,30 @@ public class LivroService : ILivroService
             await command.ExecuteNonQueryAsync();
 
             await DeleteLivroAutorAsync(connectionString, id);
+
             await DeleteLivroAssuntoAsync(connectionString, id);
         }
+        catch (SqlException sqlEx) when (sqlEx.Number == 547)
+        {
+            throw new InvalidOperationException("Não é possível excluir o livro, pois ele está associado a outros registros.", sqlEx);
+        }
+        catch (SqlException sqlEx) when (sqlEx.Number == 2627)
+        {
+            throw new InvalidOperationException("Ocorreu uma violação de chave única no banco de dados.", sqlEx);
+        }
+        catch (SqlException sqlEx)
+        {
+            throw new InvalidOperationException("Ocorreu um erro ao acessar o banco de dados.", sqlEx);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException("Ocorreu um erro na operação atual.", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ApplicationException("Ocorreu um erro inesperado.", ex);
+        }
+
     }
 
     public async Task AddLivroAutorAsync(string connectionString, int codL, int codAu)
@@ -169,7 +215,6 @@ public class LivroService : ILivroService
             await command.ExecuteNonQueryAsync();
         }
     }
-
 
     public async Task UpdateLivroAutorAsync(string connectionString, int codL, int codAu)
     {
@@ -211,13 +256,12 @@ public class LivroService : ILivroService
                 CommandType = CommandType.StoredProcedure
             };
             command.Parameters.AddWithValue("@CodL", codL);
-            command.Parameters.AddWithValue("@CodAssunto", codAssunto);
+            command.Parameters.AddWithValue("@CodAs", codAssunto);
 
             connection.Open();
             await command.ExecuteNonQueryAsync();
         }
     }
-
 
     public async Task UpdateLivroAssuntoAsync(string connectionString, int codL, int codAssunto)
     {
@@ -228,7 +272,7 @@ public class LivroService : ILivroService
                 CommandType = CommandType.StoredProcedure
             };
             command.Parameters.AddWithValue("@CodL", codL);
-            command.Parameters.AddWithValue("@CodAssunto", codAssunto);
+            command.Parameters.AddWithValue("@CodAs", codAssunto);
 
             connection.Open();
             await command.ExecuteNonQueryAsync();

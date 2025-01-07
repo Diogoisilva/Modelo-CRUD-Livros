@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Modelo.Domain.Interfaces;
 using Modelo.Domain.Models;
+using System.Threading.Tasks;
 
 namespace Modelo.Api.Controllers
 {
@@ -16,11 +17,11 @@ namespace Modelo.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult InserirAutor([FromBody] AutorRequestModel autor)
+        public async Task<IActionResult> InserirAutor([FromBody] AutorRequestModel autor)
         {
             try
             {
-                _autorService.InserirAutor(autor);
+                await _autorService.InserirAutorAsync(autor);
                 return Ok(new { Message = "Autor inserido com sucesso!" });
             }
             catch (Exception ex)
@@ -30,11 +31,11 @@ namespace Modelo.Api.Controllers
         }
 
         [HttpPut("{codAu}")]
-        public IActionResult AtualizarAutor(int codAu, [FromBody] AutorRequestModel autor)
+        public async Task<IActionResult> AtualizarAutor(int codAu, [FromBody] AutorRequestModel autor)
         {
             try
             {
-                _autorService.AtualizarAutor(codAu, autor);
+                await _autorService.AtualizarAutorAsync(codAu, autor);
                 return Ok(new { Message = "Autor atualizado com sucesso!" });
             }
             catch (KeyNotFoundException)
@@ -48,11 +49,11 @@ namespace Modelo.Api.Controllers
         }
 
         [HttpDelete("{codAu}")]
-        public IActionResult DeletarAutor(int codAu)
+        public async Task<IActionResult> DeletarAutor(int codAu)
         {
             try
             {
-                _autorService.DeletarAutor(codAu);
+                await _autorService.DeletarAutorAsync(codAu);
                 return Ok(new { Message = "Autor deletado com sucesso!" });
             }
             catch (KeyNotFoundException)
@@ -66,11 +67,11 @@ namespace Modelo.Api.Controllers
         }
 
         [HttpGet("{codAu}")]
-        public IActionResult ObterAutorPorId(int codAu)
+        public async Task<IActionResult> ObterAutorPorId(int codAu)
         {
             try
             {
-                var autor = _autorService.ObterAutorPorId(codAu);
+                var autor = await _autorService.ObterAutorPorIdAsync(codAu);
                 if (autor == null)
                 {
                     return NotFound(new { Message = "Autor não encontrado." });
@@ -84,11 +85,11 @@ namespace Modelo.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult ListarAutores()
+        public async Task<IActionResult> ListarAutores()
         {
             try
             {
-                var autores = _autorService.ListarAutores();
+                var autores = await _autorService.ListarAutoresAsync();
                 return Ok(autores);
             }
             catch (Exception ex)

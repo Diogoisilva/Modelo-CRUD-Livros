@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Modelo.Domain.Models;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
 public class LivroController : ControllerBase
 {
     private readonly ILivroService _livroService;
@@ -19,19 +20,33 @@ public class LivroController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Livro>>> GetLivros()
     {
-        var livros = await _livroService.GetLivrosAsync(_connectionString);
-        return Ok(livros);
+        try
+        {
+            var livros = await _livroService.GetLivrosAsync(_connectionString);
+            return Ok(livros);
+        }
+        catch (SqlException ex)
+        {
+            return StatusCode(500, new { Message = $"Erro de banco de dados: {ex.Message}" });
+        }
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Livro>> GetLivro(int id)
     {
-        var livro = await _livroService.GetLivroByIdAsync(_connectionString, id);
-        if (livro == null)
+        try
         {
-            return NotFound();
+            var livro = await _livroService.GetLivroByIdAsync(_connectionString, id);
+            if (livro == null)
+            {
+                return NotFound();
+            }
+            return Ok(livro);
         }
-        return Ok(livro);
+        catch (SqlException ex)
+        {
+            return StatusCode(500, new { Message = $"Erro de banco de dados: {ex.Message}" });
+        }
     }
 
     [HttpPost]
@@ -42,9 +57,13 @@ public class LivroController : ControllerBase
             var createdLivro = await _livroService.CreateLivroAsync(_connectionString, livro);
             return CreatedAtAction(nameof(GetLivro), new { id = createdLivro.CodL }, createdLivro);
         }
-        catch (Exception ex)
+        catch (SqlException ex)
         {
             return StatusCode(500, new { Message = $"Erro ao criar o livro: {ex.Message}" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = $"Erro inesperado: {ex.Message}" });
         }
     }
 
@@ -53,19 +72,31 @@ public class LivroController : ControllerBase
     {
         if (id != livro.CodL)
         {
-            return BadRequest();
+            return BadRequest(new { Message = "ID do livro não corresponde." });
         }
 
         try
         {
+
+            if (livro.Assunto == null)
+            {
+                return BadRequest(new { Message = "Assunto é obrigatório." });
+            }
+
             await _livroService.UpdateLivroAsync(_connectionString, livro);
+
             return NoContent();
+        }
+        catch (SqlException ex)
+        {
+            return StatusCode(500, new { Message = $"Erro ao atualizar o livro no banco de dados: {ex.Message}" });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { Message = $"Erro ao atualizar o livro: {ex.Message}" });
+            return StatusCode(500, new { Message = $"Erro inesperado: {ex.Message}" });
         }
     }
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteLivro(int id)
@@ -75,9 +106,13 @@ public class LivroController : ControllerBase
             await _livroService.DeleteLivroAsync(_connectionString, id);
             return NoContent();
         }
+        catch (SqlException ex)
+        {
+            return StatusCode(500, new { Message = $"Erro ao excluir o livro no banco de dados: {ex.Message}" });
+        }
         catch (Exception ex)
         {
-            return StatusCode(500, new { Message = $"Erro ao excluir o livro: {ex.Message}" });
+            return StatusCode(500, new { Message = $"Erro inesperado: {ex.Message}" });
         }
     }
 }
