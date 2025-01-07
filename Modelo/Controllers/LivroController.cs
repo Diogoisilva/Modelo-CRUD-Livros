@@ -1,93 +1,118 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Modelo.Domain.Interfaces;
 using Modelo.Domain.Models;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 
-namespace Modelo.Api.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class LivroController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class LivroController : ControllerBase
+    private readonly ILivroService _livroService;
+    private readonly string _connectionString;
+
+    public LivroController(ILivroService livroService, IConfiguration configuration)
     {
-        private readonly ILivroService _livroService;
+        _livroService = livroService;
+        _connectionString = configuration.GetConnectionString("DefaultConnection");
+    }
 
-        public LivroController(ILivroService livroService)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Livro>>> GetLivros()
+    {
+        try
         {
-            _livroService = livroService;
+            var livros = await _livroService.GetLivrosAsync(_connectionString);
+            return Ok(livros);
+        }
+        catch (SqlException ex)
+        {
+            return StatusCode(500, new { Message = $"Erro de banco de dados: {ex.Message}" });
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Livro>> GetLivro(int id)
+    {
+        try
+        {
+            var livro = await _livroService.GetLivroByIdAsync(_connectionString, id);
+            if (livro == null)
+            {
+                return NotFound();
+            }
+            return Ok(livro);
+        }
+        catch (SqlException ex)
+        {
+            return StatusCode(500, new { Message = $"Erro de banco de dados: {ex.Message}" });
+        }
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Livro>> CreateLivro([FromBody] Livro livro)
+    {
+        try
+        {
+            var createdLivro = await _livroService.CreateLivroAsync(_connectionString, livro);
+            return CreatedAtAction(nameof(GetLivro), new { id = createdLivro.CodL }, createdLivro);
+        }
+        catch (SqlException ex)
+        {
+            return StatusCode(500, new { Message = $"Erro ao criar o livro: {ex.Message}" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = $"Erro inesperado: {ex.Message}" });
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateLivro(int id, [FromBody] Livro livro)
+    {
+        if (id != livro.CodL)
+        {
+            return BadRequest(new { Message = "ID do livro não corresponde." });
         }
 
-        [HttpPost]
-        public IActionResult InserirLivro([FromBody] LivroRequestModel livro)
+        try
         {
-            _livroService.InserirLivro(livro);
-            return Ok(new { Message = "Livro inserido com sucesso!" });
-        }
 
-        [HttpPut("{codl}")]
-        public IActionResult AtualizarLivro(int codl, [FromBody] LivroRequestModel livro)
-        {
-            try
+            if (livro.Assunto == null)
             {
-                _livroService.AtualizarLivro(codl, livro);
-                return Ok(new { Message = "Livro atualizado com sucesso!" });
+                return BadRequest(new { Message = "Assunto é obrigatório." });
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { Message = "Livro não encontrado." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = $"Erro ao atualizar o livro: {ex.Message}" });
-            }
-        }
 
-        [HttpDelete("{codl}")]
-        public IActionResult DeletarLivro(int codl)
-        {
-            try
-            {
-                _livroService.DeletarLivro(codl);
-                return Ok(new { Message = "Livro deletado com sucesso!" });
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { Message = "Livro não encontrado." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = $"Erro ao deletar o livro: {ex.Message}" });
-            }
-        }
+            await _livroService.UpdateLivroAsync(_connectionString, livro);
 
-        [HttpGet("{codl}")]
-        public IActionResult ObterLivroPorId(int codl)
-        {
-            try
-            {
-                var livro = _livroService.ObterLivroPorId(codl);
-                if (livro == null)
-                {
-                    return NotFound(new { Message = "Livro não encontrado." });
-                }
-                return Ok(livro);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = $"Erro ao obter os detalhes do livro: {ex.Message}" });
-            }
+            return NoContent();
         }
-
-        [HttpGet]
-        public IActionResult ListarLivros()
+        catch (SqlException ex)
         {
-            try
-            {
-                var livros = _livroService.ListarLivros();
-                return Ok(livros);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { Message = $"Erro ao listar os livros: {ex.Message}" });
-            }
+            return StatusCode(500, new { Message = $"Erro ao atualizar o livro no banco de dados: {ex.Message}" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = $"Erro inesperado: {ex.Message}" });
+        }
+    }
+
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteLivro(int id)
+    {
+        try
+        {
+            await _livroService.DeleteLivroAsync(_connectionString, id);
+            return NoContent();
+        }
+        catch (SqlException ex)
+        {
+            return StatusCode(500, new { Message = $"Erro ao excluir o livro no banco de dados: {ex.Message}" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = $"Erro inesperado: {ex.Message}" });
         }
     }
 }
